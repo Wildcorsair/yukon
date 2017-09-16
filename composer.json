@@ -1,0 +1,19 @@
+{
+    "name": "texas/yukon",
+    "description": "Custom ORM",
+    "type": "project",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Vladimir Zakharchenko",
+            "email": "vmzakharchenko@yandex.ru"
+        }
+    ],
+    "require": {},
+    "autoload": {
+        "psr-4": {
+            "Yukon\\": "app/",
+            "Yukon\\Core\\": "core/"
+        }
+    }
+}
