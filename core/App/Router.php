@@ -52,14 +52,15 @@ class Router
         for ($i = 0; $i < count($routeParts); $i++) {
             if ($routeParts[$i] != $uriParts[$i]) {
                 $paramName = preg_replace('/[{|}]/', '', $routeParts[$i]);
-                $params[$paramName] = $uriParts[$i];
+                // $params[$paramName] = $uriParts[$i];
+                $params[] = $uriParts[$i];
             }
         }
 
         return $params;
     }
 
-    private function run($params)
+    private function run(array $params)
     {
         if (is_null($this->controller) || $this->controller == '') {
             return false;
@@ -75,7 +76,7 @@ class Router
         try {
             $app = new $controllerFullName();
             if (method_exists($app, $methodName)) {
-                $app->$methodName($params);
+                $app->$methodName(...$params);
             } else {
                 throw new \Exception('Method: ' . $methodName . ' not found in the class: ' . $controllerFullName);
             }
