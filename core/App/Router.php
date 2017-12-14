@@ -9,7 +9,7 @@ class Router
      * @var string
      */
     public $controller;
-    
+
     /**
      * @var string
      */
@@ -29,10 +29,10 @@ class Router
             if (preg_match('~^' . $transformedRoute . '$~i', $uri) ) {
                 // params[0] - request method (GET/POST/PUT)
                 if ($requestMethod == $params[0]) {
-                    
+
                     // params[1] - controller name
                     $this->controller = $params[1];
-                    
+
                     // params[2] - method name
                     $this->method = $params[2];
                     break;
@@ -67,12 +67,13 @@ class Router
         }
 
         if (is_null($this->method) || $this->method == '') {
+            echo 'Request method is invalid';
             return false;
         }
 
         $controllerFullName = '\Yukon\Controller\\' . $this->controller;
         $methodName = $this->method;
-        
+
         try {
             $app = new $controllerFullName();
             if (method_exists($app, $methodName)) {

@@ -8,4 +8,9 @@ class UserController
     {
         echo 'This is User controller';
     }
+
+    public function edit($id)
+    {
+        echo 'Edit User: ' . $id;
+    }
 }
