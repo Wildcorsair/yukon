@@ -17,8 +17,7 @@ class Router extends RouterController
 
     public function __construct()
     {
-        include(ROOT . '/../config/routes.cfg.php');
-        // $routes = include(ROOT . '/../config/routes.cfg.php');
+        include(ROOT . '/../config/routes.php');
 
         $uri = $_SERVER['REQUEST_URI'];
         $requestMethod = $_SERVER['REQUEST_METHOD'];
@@ -27,10 +26,6 @@ class Router extends RouterController
             $method = $params[0];
             $route = $params[1];
             $callback = $params[2];
-
-            // echo '<pre>';
-            // var_dump(gettype($callback));
-            // echo '</pre>';
 
             $route = (strlen($route) > 1) ? rtrim($route, '/') : $route;
             $transformedRoute = preg_replace('/{[\w]+}/', '[\w]+', $route);
