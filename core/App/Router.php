@@ -15,70 +15,55 @@ class Router extends RouterController
      */
     public $method;
 
+    /**
+     * @var boolean
+     */
+    private $isRouteMatch = false;
+
     public function __construct()
     {
-        include(ROOT . '/../config/routes.php');
+        try {
+            $this->initRoutes();
 
-        $uri = $_SERVER['REQUEST_URI'];
-        $requestMethod = $_SERVER['REQUEST_METHOD'];
+            $uri = $this->getURI();
+            $requestMethod = $this->getRequestMethod();
 
-        foreach (self::$routes as $params) {
-            $method = $params[0];
-            $route = $params[1];
-            $callback = $params[2];
+            foreach (self::$routes as $params) {
+                list($method, $route, $callback) = $params;
 
-            $route = (strlen($route) > 1) ? rtrim($route, '/') : $route;
-            $transformedRoute = preg_replace('/{[\w]+}/', '[\w]+', $route);
+                $route = (strlen($route) > 1) ? rtrim($route, '/') : $route;
+                $transformedRoute = preg_replace('/{[\w]+}/', '[\w]+', $route);
 
-            if (preg_match('~^' . $transformedRoute . '$~i', $uri) ) {
-                // params[0] - request method (GET/POST/PUT)
-                if ($requestMethod == $method) {
+                if (preg_match('~^' . $transformedRoute . '$~i', $uri) ) {
+                    if ($requestMethod == $method) {
 
-                    if (gettype($callback) == 'object') {
-                        $callback();
-                    } else {
-                      // parts[0] - controller name
-                      $parts = explode('@', $params[2]);
-                      $this->controller = $parts[0];
+                        if (gettype($callback) == 'object') {
+                            $callback();
+                        } else {
+                            $attribute = $this->getAttributeParts($callback);
+                            list($controller, $method) = $attribute;
 
-                      // parts[1] - method name
-                      $this->method = $parts[1];
+                            $this->controller = $controller;
+                            $this->method = $method;
+                        }
+                        $this->isRouteMatch = true;
+                        break;
                     }
-                    break;
                 }
             }
-        }
-        $params = $this->matchParams($uri, $route);
-        $this->run($params);
-    }
 
-    // public function __construct()
-    // {
-    //     // $routes = include(ROOT . '/../config/routes.cfg.php');
-    //
-    //     $uri = $_SERVER['REQUEST_URI'];
-    //     $requestMethod = $_SERVER['REQUEST_METHOD'];
-    //
-    //     foreach (self::$routes as $route => $params) {
-    //         $route = (strlen($route) > 1) ? rtrim($route, '/') : $route;
-    //         $transformedRoute = preg_replace('/{[\w]+}/', '[\w]+', $route);
-    //
-    //         if (preg_match('~^' . $transformedRoute . '$~i', $uri) ) {
-    //             // params[0] - request method (GET/POST/PUT)
-    //             if ($requestMethod == $params[0]) {
-    //
-    //                 // params[1] - controller name
-    //                 $this->controller = $params[1];
-    //
-    //                 // params[2] - method name
-    //                 $this->method = $params[2];
-    //                 break;
-    //             }
-    //         }
-    //     }
-    //     $params = $this->matchParams($uri, $route);
-    //     $this->run($params);
-    // }
+            if (!$this->isRouteMatch) {
+                throw new \Exception('404 - Page not found.');
+            } else if ($this->isRouteMatch && !empty($this->controller)) {
+                $params = $this->matchParams($uri, $route);
+                $this->run($params);
+            }
+
+        } catch(\Exception $e) {
+            echo 'Error: ' . $e->getMessage();
+        }
+
+    }
 
     private function matchParams($uri, $route)
     {
@@ -89,7 +74,6 @@ class Router extends RouterController
         for ($i = 0; $i < count($routeParts); $i++) {
             if (isset($routeParts[$i]) && isset($uriParts[$i]) && $routeParts[$i] != $uriParts[$i]) {
                 $paramName = preg_replace('/[{|}]/', '', $routeParts[$i]);
-                // $params[$paramName] = $uriParts[$i];
                 $params[] = $uriParts[$i];
             }
         }
@@ -97,25 +81,43 @@ class Router extends RouterController
         return $params;
     }
 
+    private function getMethodParamsCount($object, $method)
+    {
+        $classMethod = new \ReflectionMethod(get_class($object), $method);
+        return count($classMethod->getParameters());
+    }
+
+    private function getAttributeParts($actionParams)
+    {
+        if ($actionParams == '') {
+            throw new \Exception('Controller or action isn\'t defined for the route.');
+        }
+
+        if (stripos($actionParams, '@') == 0) {
+            throw new \Exception('Action isn\'t defined for the route.');
+        }
+
+        return explode('@', $actionParams);
+    }
+
     private function run(array $params)
     {
-        if (is_null($this->controller) || $this->controller == '') {
-            return false;
-        }
-
-        if (is_null($this->method) || $this->method == '') {
-            echo 'Request method is invalid';
-            return false;
-        }
-
-        $controllerFullName = '\Yukon\Controller\\' . $this->controller;
-        $methodName = $this->method;
-
         try {
+            if (is_null($this->controller) || $this->controller == '') {
+                throw new \Exception('Controller not found.');
+
+            }
+
+            if (is_null($this->method) || $this->method == '') {
+                throw new \Exception('Method not found.');
+            }
+
+            $controllerFullName = '\Yukon\Controller\\' . $this->controller;
+            $methodName = $this->method;
+
             $app = new $controllerFullName();
             if (method_exists($app, $methodName)) {
-                $classMethod = new \ReflectionMethod(get_class($app), $methodName);
-                $argumentCount = count($classMethod->getParameters());
+                $argumentCount = $this->getMethodParamsCount($app, $methodName);
                 if ($argumentCount > count($params)) {
                     throw new \Exception("Parameter was defined in the controller method, but doesn't use in the route.");
                 }

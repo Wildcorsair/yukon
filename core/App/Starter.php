@@ -8,7 +8,7 @@ class Starter
 {
     public function __construct()
     {
-        // echo 'This is Main App<br>';
+        //
     }
 
     public function run()

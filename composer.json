@@ -9,7 +9,9 @@
             "email": "vmzakharchenko@yandex.ru"
         }
     ],
-    "require": {},
+    "require": {
+        "phpunit/phpunit": "^5.7"
+    },
     "autoload": {
         "psr-4": {
             "Yukon\\": "app/",
