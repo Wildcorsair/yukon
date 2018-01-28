@@ -65,6 +65,14 @@ class Router extends RouterController
 
     }
 
+    /**
+     * Compares URI string with template string from the route and builds array
+     * with matched parameters.
+     *
+     * @param string $uri URI string
+     * @param string $route Template string from the route
+     * @return array
+     */
     private function matchParams($uri, $route)
     {
         $params = array();

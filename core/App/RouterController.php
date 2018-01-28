@@ -51,16 +51,29 @@ class RouterController
         self::$routes[] = array('DELETE', $route, $callback);
     }
 
+    /**
+     * Initialize the routes file.
+     */
     protected function initRoutes()
     {
-        include(ROOT . '/../config/routes.php');
+        if (file_exists(ROOT . '/../config/routes.php')) {
+            include(ROOT . '/../config/routes.php');
+        } else {
+            throw new \Exception('Routes files does not exists!');
+        }
     }
 
+    /**
+     * Returns URI from URL string.
+     */
     protected function getURI()
     {
         return $_SERVER['REQUEST_URI'];
     }
 
+    /**
+     * Returns request method.
+     */
     protected function getRequestMethod()
     {
         return $_SERVER['REQUEST_METHOD'];

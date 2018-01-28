@@ -1,11 +1,18 @@
 <?php
 
+/**
+ * Example controller for working with user.
+ */
+
 namespace Yukon\Controller\User;
 
-class UserController
+use Yukon\Controller\Controller;
+
+class UserController extends Controller
 {
     public function __construct()
     {
+        parent::__construct();
         echo 'This is User controller<br>';
     }
 
