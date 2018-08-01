@@ -18,12 +18,12 @@ class UserController extends Controller
 
     public function index()
     {
-        echo 'Show Users<br>';
+        echo 'Show ALL Users<br>';
     }
 
     public function show($id)
     {
-        echo 'Show User: ' . $id . '<br>';
+        echo 'Show SINGLE User: ' . $id . '<br>';
     }
 
     public function create()

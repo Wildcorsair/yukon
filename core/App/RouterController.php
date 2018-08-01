@@ -99,7 +99,8 @@ class RouterController
       return $self;
     }
 
-    public function group($callback) {
+    public function group($callback)
+    {
       self::$prefix = $this->_prefix;
       $callback();
     }
