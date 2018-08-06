@@ -131,7 +131,7 @@ class Router extends RouterController
                 }
                 $app->$methodName(...$params);
             } else {
-                throw new \Exception('Method: ' . $methodName . ' not found in the class: ' . $controllerFullName);
+                throw new \Exception('Method: ' . $methodName . ' is not found in the class: ' . $controllerFullName);
             }
         } catch (\Exception $e) {
             echo 'Error: ' . $e->getMessage();

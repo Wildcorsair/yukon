@@ -1,6 +1,7 @@
 <?php
 
 namespace Yukon\Core\App;
+use Yukon\Core\App\RouterController;
 
 class RouterController
 {
@@ -8,6 +9,12 @@ class RouterController
     public static $prefix;
     protected $_prefix = '';
 
+    /**
+     * Define route for 'GET' method.
+     *
+     * @param string $route Route pattern
+     * @param string $callback Define controller and method
+     */
     public static function get($route, $callback)
     {
         if ($route == '') {
@@ -21,6 +28,12 @@ class RouterController
         self::$routes[] = array('GET', $route, $callback);
     }
 
+    /**
+     * Define route for 'POST' method.
+     *
+     * @param string $route Route pattern
+     * @param string $callback Define controller and method
+     */
     public static function post($route, $callback)
     {
         if ($route == '') {
@@ -34,6 +47,12 @@ class RouterController
         self::$routes[] = array('POST', $route, $callback);
     }
 
+    /**
+     * Define route for 'PUT' method.
+     *
+     * @param string $route Route pattern
+     * @param string $callback Define controller and method
+     */
     public static function put($route, $callback)
     {
         if ($route == '') {
@@ -47,6 +66,12 @@ class RouterController
         self::$routes[] = array('PUT', $route, $callback);
     }
 
+    /**
+     * Define route for 'PATCH' method.
+     *
+     * @param string $route Route pattern
+     * @param string $callback Define controller and method
+     */
     public static function patch($route, $callback)
     {
         if ($route == '') {
@@ -60,6 +85,12 @@ class RouterController
         self::$routes[] = array('PATCH', $route, $callback);
     }
 
+    /**
+     * Define route for 'DELETE' method.
+     *
+     * @param string $route Route pattern
+     * @param string $callback Define controller and method
+     */
     public static function delete($route, $callback)
     {
         if ($route == '') {
@@ -80,14 +111,17 @@ class RouterController
     {
         if (file_exists(ROOT . '/../config/routes.php')) {
             include(ROOT . '/../config/routes.php');
-            echo '<pre>';
-            var_dump(self::$routes);
-            echo '</pre>';
         } else {
             throw new \Exception('Routes file does not exists!');
         }
     }
 
+    /**
+     * Return object with prefix property.
+     *
+     * @param string $prefix Prefix for the route
+     * @return object Yukon\Core\App\RouterController
+     */
     public static function prefix($prefix)
     {
       $self = __CLASS__;
@@ -99,9 +133,17 @@ class RouterController
       return $self;
     }
 
-    public function group($callback) {
+    /**
+     * Group routes by common prefix.
+     *
+     * @param Closure Callback function
+     * @return void
+     */
+    public function group($callback)
+    {
       self::$prefix = $this->_prefix;
       $callback();
+      self::$prefix = null;
     }
 
     /**
