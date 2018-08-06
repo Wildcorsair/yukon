@@ -13,36 +13,35 @@ class UserController extends Controller
     public function __construct()
     {
         parent::__construct();
-        echo 'This is User controller<br>';
     }
 
     public function index()
     {
-        echo 'Show Users<br>';
+        echo 'Show ALL Users';
     }
 
     public function show($id)
     {
-        echo 'Show User: ' . $id . '<br>';
+        echo 'Show SINGLE User: ' . $id;
     }
 
     public function create()
     {
-        echo 'Create User<br>';
+        echo 'Create User';
     }
 
     public function edit($id)
     {
-        echo 'Edit User: ' . $id . '<br>';
+        echo 'Edit User: ' . $id;
     }
 
     public function update($id)
     {
-        echo 'Update User: ' . $id . '<br>';
+        echo 'Update User: ' . $id;
     }
 
     public function delete($id)
     {
-        echo 'Delete User: ' . $id . '<br>';
+        echo 'Delete User: ' . $id;
     }
 }
