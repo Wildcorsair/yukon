@@ -32,7 +32,7 @@ class Router extends RouterController
                 list($method, $route, $callback) = $params;
 
                 $route = (strlen($route) > 1) ? rtrim($route, '/') : $route;
-                $transformedRoute = preg_replace('/{[\w]+}/', '[\w]+', $route);
+                $transformedRoute = preg_replace('/{[\w_-]+}/', '[\w_-]+', $route);
 
                 if (preg_match('~^' . $transformedRoute . '$~i', $uri) ) {
                     if ($requestMethod == $method) {
@@ -76,12 +76,12 @@ class Router extends RouterController
     private function matchParams($uri, $route)
     {
         $params = array();
-        $uriParts = explode('/', $uri);
-        $routeParts = explode('/', $route);
+        $uriParts = explode('/', ltrim($uri, '/'));
+        $routeParts = explode('/', ltrim($route, '/'));
 
         for ($i = 0; $i < count($routeParts); $i++) {
             if (isset($routeParts[$i]) && isset($uriParts[$i]) && $routeParts[$i] != $uriParts[$i]) {
-                $paramName = preg_replace('/[{|}]/', '', $routeParts[$i]);
+                $paramName = preg_replace('/[{|}]/', '', strip_tags($routeParts[$i]));
                 $params[] = $uriParts[$i];
             }
         }
