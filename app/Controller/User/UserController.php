@@ -7,6 +7,7 @@
 namespace Yukon\Controller\User;
 
 use Yukon\Controller\Controller;
+use Yukon\Core\App\Request;
 
 class UserController extends Controller
 {
@@ -15,18 +16,20 @@ class UserController extends Controller
         parent::__construct();
     }
 
-    public function index()
+    public function index(Request $request)
     {
         echo 'Show ALL Users';
     }
 
-    public function show($id)
+    public function show(Request $request, $id)
     {
         echo 'Show SINGLE User: ' . $id;
     }
 
-    public function create()
+    public function create(Request $request)
     {
+        echo $request->headers('Content-Type');
+        echo $request->email;
         echo 'Create User';
     }
 
@@ -35,7 +38,7 @@ class UserController extends Controller
         echo 'Edit User: ' . $id;
     }
 
-    public function update($id)
+    public function update(Request $request, $id)
     {
         echo 'Update User: ' . $id;
     }
