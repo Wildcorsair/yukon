@@ -7,6 +7,7 @@
 namespace Yukon\Controller\User;
 
 use Yukon\Controller\Controller;
+use Yukon\Core\App\Request;
 
 class UserController extends Controller
 {

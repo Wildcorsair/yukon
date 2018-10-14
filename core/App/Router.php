@@ -1,6 +1,7 @@
 <?php
-
 namespace Yukon\Core\App;
+
+use Yukon\Core\App\Request;
 
 class Router extends RouterController
 {
@@ -89,10 +90,24 @@ class Router extends RouterController
         return $params;
     }
 
-    private function getMethodParamsCount($object, $method)
+    private function getMethodMetaData($object, $method)
     {
+        $data = new \stdClass();
+        $data->paramsCount = 0;
+        $data->hasRequest = false;
+
         $classMethod = new \ReflectionMethod(get_class($object), $method);
-        return count($classMethod->getParameters());
+        $parameters = $classMethod->getParameters();
+
+        foreach ($parameters as $value) {
+            if ($value->name !== 'request') {
+                $data->paramsCount++;
+            } else {
+                $data->hasRequest = true;
+            }
+        }
+
+        return $data;
     }
 
     private function getAttributeParts($actionParams)
@@ -125,11 +140,18 @@ class Router extends RouterController
 
             $app = new $controllerFullName();
             if (method_exists($app, $methodName)) {
-                $argumentCount = $this->getMethodParamsCount($app, $methodName);
-                if ($argumentCount > count($params)) {
+                $metaData = $this->getMethodMetaData($app, $methodName);
+                if ($metaData->paramsCount > count($params)) {
                     throw new \Exception("Parameter was defined in the controller method, but doesn't use in the route.");
                 }
-                $app->$methodName(...$params);
+
+                if ($metaData->hasRequest) {
+                    $request = new Request();
+                    $app->$methodName($request, ...$params);
+                } else {
+                    $app->$methodName(...$params);
+                }
+
             } else {
                 throw new \Exception('Method: ' . $methodName . ' is not found in the class: ' . $controllerFullName);
             }
