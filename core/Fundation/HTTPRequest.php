@@ -3,6 +3,6 @@ namespace Yukon\Core\Fundation;
 
 interface HTTPRequest
 {
-    public function getHeaders();
-    public function getParameters();
+    public function headers($name);
+    public function get($name);
 }
