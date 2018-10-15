@@ -8,6 +8,7 @@ namespace Yukon\Controller\User;
 
 use Yukon\Controller\Controller;
 use Yukon\Core\App\Request;
+use Yukon\Core\App\Response;
 
 class UserController extends Controller
 {
@@ -16,9 +17,9 @@ class UserController extends Controller
         parent::__construct();
     }
 
-    public function index(Request $request)
+    public function index()
     {
-        echo 'Show ALL Users';
+        return (new Response())->json(['id' => 1, 'name' => 'John']);
     }
 
     public function show(Request $request, $id)

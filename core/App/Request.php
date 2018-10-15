@@ -1,7 +1,7 @@
 <?php
 namespace Yukon\Core\App;
 
-use Yukon\Core\Fundation\HTTPRequest;
+use Yukon\Core\Contracts\HTTPRequest;
 
 class Request implements HTTPRequest
 {
@@ -61,7 +61,10 @@ class Request implements HTTPRequest
 
         // Get parameters from the php://input when Content-Type is 'json' string.
         if ($this->headers('Content-Type') == 'application/json') {
-            $parameters = json_decode(file_get_contents('php://input'), true);
+            $data = json_decode(file_get_contents('php://input'), true);
+            if (!empty($data)) {
+                $parameters = $data;
+            }
         }
 
         if (isset($parameters) && !empty($parameters) && is_array($parameters)) {

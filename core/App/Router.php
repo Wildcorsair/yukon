@@ -25,7 +25,7 @@ class Router extends RouterController
     {
         try {
             $this->initRoutes();
-
+            $this->parseURI();
             $uri = $this->getURI();
             $requestMethod = $this->getRequestMethod();
 
