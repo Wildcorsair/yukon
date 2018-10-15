@@ -1,5 +1,5 @@
 <?php
-namespace Yukon\Core\Fundation;
+namespace Yukon\Core\Contracts;
 
 interface HTTPRequest
 {
