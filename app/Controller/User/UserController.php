@@ -19,12 +19,13 @@ class UserController extends Controller
 
     public function index()
     {
-        return (new Response())->json(['id' => 1, 'name' => 'John']);
+        return (new Response())->header('Content-Type', 'application/json')->json(['id' => 1, 'name' => 'John']);
     }
 
     public function show(Request $request, $id)
     {
-        echo 'Show SINGLE User: ' . $id;
+        // echo $request->headers('Authorization');
+        return (new Response(401))->content("Show SINGLE User: {$id}");
     }
 
     public function create(Request $request)
