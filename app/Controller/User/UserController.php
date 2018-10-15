@@ -18,6 +18,7 @@ class UserController extends Controller
 
     public function index(Request $request)
     {
+        var_dump($request->from);
         echo 'Show ALL Users';
     }
 
