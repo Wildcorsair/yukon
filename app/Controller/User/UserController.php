@@ -19,7 +19,7 @@ class UserController extends Controller
 
     public function index()
     {
-        return (new Response())->json(['id' => 1, 'name' => 'John']);
+        return (new Response(401))->header('Content-Type', 'application/json')->json(['id' => 1, 'name' => 'John']);
     }
 
     public function show(Request $request, $id)
