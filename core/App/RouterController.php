@@ -8,6 +8,9 @@ class RouterController
     public static $routes = [];
     public static $prefix;
     protected $_prefix = '';
+    public $uri;
+    public $queryString;
+    public $queryParams = [];
 
     /**
      * Define route for 'GET' method.
@@ -146,12 +149,24 @@ class RouterController
       self::$prefix = null;
     }
 
+    protected function parseURI()
+    {
+        $fullUri = $_SERVER['REQUEST_URI'];
+        $pos = stripos($fullUri, '?');
+
+        if ($pos > 0) {
+            $this->uri = substr($fullUri, 0, $pos);
+        } else {
+            $this->uri = $fullUri;
+        }
+    }
+
     /**
      * Returns URI from URL string.
      */
     protected function getURI()
     {
-        return $_SERVER['REQUEST_URI'];
+        return $this->uri;
     }
 
     /**

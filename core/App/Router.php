@@ -1,6 +1,7 @@
 <?php
-
 namespace Yukon\Core\App;
+
+use Yukon\Core\App\Request;
 
 class Router extends RouterController
 {
@@ -24,7 +25,7 @@ class Router extends RouterController
     {
         try {
             $this->initRoutes();
-
+            $this->parseURI();
             $uri = $this->getURI();
             $requestMethod = $this->getRequestMethod();
 
@@ -32,7 +33,7 @@ class Router extends RouterController
                 list($method, $route, $callback) = $params;
 
                 $route = (strlen($route) > 1) ? rtrim($route, '/') : $route;
-                $transformedRoute = preg_replace('/{[\w]+}/', '[\w]+', $route);
+                $transformedRoute = preg_replace('/{[\w_-]+}/', '[\w_-]+', $route);
 
                 if (preg_match('~^' . $transformedRoute . '$~i', $uri) ) {
                     if ($requestMethod == $method) {
@@ -76,12 +77,12 @@ class Router extends RouterController
     private function matchParams($uri, $route)
     {
         $params = array();
-        $uriParts = explode('/', $uri);
-        $routeParts = explode('/', $route);
+        $uriParts = explode('/', ltrim($uri, '/'));
+        $routeParts = explode('/', ltrim($route, '/'));
 
         for ($i = 0; $i < count($routeParts); $i++) {
             if (isset($routeParts[$i]) && isset($uriParts[$i]) && $routeParts[$i] != $uriParts[$i]) {
-                $paramName = preg_replace('/[{|}]/', '', $routeParts[$i]);
+                $paramName = preg_replace('/[{|}]/', '', strip_tags($routeParts[$i]));
                 $params[] = $uriParts[$i];
             }
         }
@@ -89,10 +90,24 @@ class Router extends RouterController
         return $params;
     }
 
-    private function getMethodParamsCount($object, $method)
+    private function getMethodMetaData($object, $method)
     {
+        $data = new \stdClass();
+        $data->paramsCount = 0;
+        $data->hasRequest = false;
+
         $classMethod = new \ReflectionMethod(get_class($object), $method);
-        return count($classMethod->getParameters());
+        $parameters = $classMethod->getParameters();
+
+        foreach ($parameters as $value) {
+            if ($value->name !== 'request') {
+                $data->paramsCount++;
+            } else {
+                $data->hasRequest = true;
+            }
+        }
+
+        return $data;
     }
 
     private function getAttributeParts($actionParams)
@@ -125,11 +140,18 @@ class Router extends RouterController
 
             $app = new $controllerFullName();
             if (method_exists($app, $methodName)) {
-                $argumentCount = $this->getMethodParamsCount($app, $methodName);
-                if ($argumentCount > count($params)) {
+                $metaData = $this->getMethodMetaData($app, $methodName);
+                if ($metaData->paramsCount > count($params)) {
                     throw new \Exception("Parameter was defined in the controller method, but doesn't use in the route.");
                 }
-                $app->$methodName(...$params);
+
+                if ($metaData->hasRequest) {
+                    $request = new Request();
+                    $app->$methodName($request, ...$params);
+                } else {
+                    $app->$methodName(...$params);
+                }
+
             } else {
                 throw new \Exception('Method: ' . $methodName . ' is not found in the class: ' . $controllerFullName);
             }
