@@ -59,6 +59,14 @@ class Request implements HTTPRequest
             $parameters = $_POST;
         }
 
+        if (isset($_FILES) && !empty($_FILES)) {
+            if (empty($parameters)) {
+                $parameters = $_FILES;
+            } else {
+                $parameters['files'] = $_FILES;
+            }
+        }
+
         // Get parameters from the php://input when Content-Type is 'json' string.
         if ($this->headers('Content-Type') == 'application/json') {
             $data = json_decode(file_get_contents('php://input'), true);
@@ -69,7 +77,11 @@ class Request implements HTTPRequest
 
         if (isset($parameters) && !empty($parameters) && is_array($parameters)) {
             foreach ($parameters as $key => $value) {
-                $this->$key = trim(htmlspecialchars(stripslashes($value)));
+                if (is_array($value)) {
+                    $this->$key = $value;
+                } else {
+                    $this->$key = trim(htmlspecialchars(stripslashes($value)));
+                }
             }
         }
     }
