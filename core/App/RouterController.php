@@ -1,7 +1,6 @@
 <?php
 
 namespace Yukon\Core\App;
-use Yukon\Core\App\RouterController;
 
 class RouterController
 {

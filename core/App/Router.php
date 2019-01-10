@@ -53,6 +53,10 @@ class Router extends RouterController
                 }
             }
 
+            if ($requestMethod === 'OPTIONS') {
+                return false;
+            }
+
             if (!$this->isRouteMatch) {
                 throw new \Exception('404 - Page not found.');
             } else if ($this->isRouteMatch && !empty($this->controller)) {
