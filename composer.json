@@ -15,7 +15,7 @@
     "autoload": {
         "psr-4": {
             "Yukon\\": "app/",
-            "Yukon\\Core\\": "core/"
+            "Yukon\\Core\\": "vendor/yukon/src/"
         }
     }
 }
